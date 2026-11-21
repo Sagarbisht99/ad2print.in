@@ -6,6 +6,7 @@ import type { Newspaper } from "@/lib/data";
 import { postEnquiry } from "@/lib/enquiry-api";
 import { parseEnquiry, type EnquiryFieldErrors } from "@/lib/enquiry-schema";
 import { calculatePricing, formatInr, nameChangeGstRate } from "@/lib/pricing";
+import { wrapTextLines } from "@/lib/text-lines";
 import {
   openRazorpayCheckout,
   PaymentCancelledError,
@@ -41,6 +42,10 @@ type PaymentStatus =
 function inr(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
+
+// A printed classified line fits 28 characters. Words are never broken unless
+// a single word is longer than a whole line.
+const AD_LINE_CHARS = 28;
 
 type Gender = "male" | "female";
 type GuardianKind = "father" | "mother" | "husband";
@@ -117,6 +122,9 @@ export function NoticeBuilder({
   const [draftId, setDraftId] = useState<string | null>(null);
   const [draftKey, setDraftKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  // When set, the user has hand-edited the ad matter and it no longer follows
+  // the generated wording until they reset it.
+  const [customNotice, setCustomNotice] = useState<string | null>(null);
 
   const rel = relationLabel(gender, guardianKind, lang);
   const edition = booking?.city;
@@ -159,7 +167,11 @@ export function NoticeBuilder({
     edition,
   ]);
 
-  const notice = generatedNotice;
+  const notice = customNotice ?? generatedNotice;
+  // One continuous preview column: every wrapped line is stacked below the
+  // previous one, with no block divisions or labels.
+  const previewLines = useMemo(() => wrapTextLines(notice, AD_LINE_CHARS), [notice]);
+  const totalLines = previewLines.length;
 
   // Flat package pricing: the published package rate is the price. No extra
   // line or word charges are added on top.
@@ -560,17 +572,91 @@ export function NoticeBuilder({
           </div>
 
           <div className="px-5 py-5 sm:px-6">
-            <label
-              htmlFor="ad-matter"
-              className="mb-1.5 block text-[13px] font-bold uppercase tracking-wide text-charcoal"
-            >
-              Ad matter
-            </label>
-            <div
-              id="ad-matter"
-              className="w-full whitespace-pre-wrap border border-maroon/30 bg-paper-2/40 px-4 py-4 text-[15px] leading-relaxed text-ink"
-            >
-              {notice}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="min-w-0">
+                <label
+                  htmlFor="ad-matter"
+                  className="mb-1.5 block text-[13px] font-bold uppercase tracking-wide text-charcoal"
+                >
+                  Ad matter (editable)
+                </label>
+                <textarea
+                  id="ad-matter"
+                  value={notice}
+                  onChange={(e) => setCustomNotice(e.target.value)}
+                  rows={7}
+                  maxLength={600}
+                  aria-describedby="ad-matter-hint"
+                  className={`${inputClass} resize-y whitespace-pre-wrap font-normal`}
+                />
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                  <span id="ad-matter-hint" className="text-xs text-charcoal">
+                    {customNotice === null
+                      ? "Auto-generated from your details. You can edit it directly."
+                      : "Edited manually."}
+                  </span>
+                  {customNotice !== null ? (
+                    <button
+                      type="button"
+                      onClick={() => setCustomNotice(null)}
+                      className="text-xs font-semibold text-maroon hover:underline"
+                    >
+                      Reset to generated
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="min-w-0">
+                <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-1">
+                  <span className="text-[13px] font-bold uppercase tracking-wide text-charcoal">
+                    Ad preview
+                  </span>
+                </div>
+                {/* Preview card mirrors the reference ad-booking UI: white box,
+                    centred heading, red indicative note, narrow serif column. */}
+                <div
+                  role="group"
+                  aria-label="Advertisement preview"
+                  className="rounded-md border border-line bg-white px-3 py-3 shadow-sm"
+                >
+                  <p className="text-center text-[13px] font-bold text-ink">Ad Preview</p>
+                  <p className="mt-0.5 text-center text-[11px] font-semibold leading-tight text-maroon">
+                    (This Is An Indicative Preview Only)
+                  </p>
+
+                  {previewLines.length ? (
+                    // One continuous justified column: every line sits below the
+                    // previous one, words spread with space-between so each line
+                    // ends flush at the right edge. Only the final line stays
+                    // natural, exactly as in print.
+                    <div className="mx-auto mt-3 flex w-fit max-w-full flex-col border-y border-line py-2 font-serif text-[13.5px] leading-[1.5] text-[#111]">
+                      {previewLines.map((line, lineIndex) => (
+                        <div
+                          key={lineIndex}
+                          className={`flex min-h-[1.5em] gap-[0.25em] ${
+                            lineIndex === previewLines.length - 1
+                              ? "justify-start"
+                              : "justify-between"
+                          }`}
+                        >
+                          {line.split(" ").map((word, wordIndex) => (
+                            <span key={wordIndex}>{word}</span>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mx-auto mt-3 flex min-h-28 w-[15rem] max-w-full items-center justify-center text-center font-serif text-sm text-charcoal">
+                      Your advertisement text will appear here.
+                    </div>
+                  )}
+
+                  <p className="mt-3 text-center text-[13px] font-semibold text-ink">
+                    Lines Count: <span className="text-maroon">{totalLines}</span>
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
