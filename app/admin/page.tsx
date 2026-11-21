@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FaCheckCircle,
   FaChevronLeft,
@@ -74,26 +74,33 @@ export default function AdminDashboardPage() {
   const [toDelete, setToDelete] = useState<EnquiryItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const load = useCallback(async () => {
-    const res = await fetch("/api/admin/enquiries", { cache: "no-store" });
-    if (!res.ok) {
-      setError("Could not load enquiries. Check MongoDB connection.");
-      setLoading(false);
-      return;
-    }
-    const data = await res.json();
-    setItems(data.items ?? []);
-    setError("");
-    setLoading(false);
+  // Fetch once on mount. Every state update happens inside a promise callback,
+  // never synchronously in the effect body. The page resets in the filter
+  // handlers below instead of an effect.
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/admin/enquiries", { cache: "no-store" })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not load enquiries");
+        return res.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setItems(data.items ?? []);
+        setError("");
+        setLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setError("Could not load enquiries. Check MongoDB connection.");
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [query, source, status]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -168,7 +175,10 @@ export default function AdminDashboardPage() {
             <FaSearch className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" color="#d0d1d3" />
             <input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
               placeholder="Search name, mobile, email, message…"
               className="w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pl-10 pr-3 text-sm outline-none placeholder:text-white/30 focus:ring-2 focus:ring-maroon/50"
             />
@@ -177,7 +187,10 @@ export default function AdminDashboardPage() {
             <FaFilter className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2" color="#d0d1d3" />
             <select
               value={source}
-              onChange={(e) => setSource(e.target.value as typeof source)}
+              onChange={(e) => {
+                setSource(e.target.value as typeof source);
+                setPage(1);
+              }}
               className={`${selectClass} pl-9`}
               aria-label="Filter by source"
             >
@@ -190,7 +203,10 @@ export default function AdminDashboardPage() {
           </div>
           <select
             value={status}
-            onChange={(e) => setStatus(e.target.value as typeof status)}
+            onChange={(e) => {
+              setStatus(e.target.value as typeof status);
+              setPage(1);
+            }}
             className={selectClass}
             aria-label="Filter by status"
           >
