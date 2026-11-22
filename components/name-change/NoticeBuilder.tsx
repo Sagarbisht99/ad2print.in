@@ -664,7 +664,7 @@ export function NoticeBuilder({
                   )}
 
                   <p className="mt-3 text-center text-[13px] font-semibold text-ink">
-                    Lines Count: <span className="text-maroon">{totalLines}</span>
+                    Estimated Line count: <span className="text-maroon">{totalLines}</span>
                   </p>
                   {lineQuote && lineQuote.extraLines > 0 ? (
                     <p className="mt-1 text-center text-[11px] leading-snug text-charcoal">
