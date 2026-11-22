@@ -1,11 +1,10 @@
 /**
  * Name-change wording pricing.
  *
- * A package covers a fixed number of printed lines (baseLines). Every line
- * beyond that adds the package's extraLineRate. Rates are synced from the
- * rate source by `scripts/syncRates.js`; when a package has no explicit
- * extra-line rate yet, the helper falls back to 20% of the package rate so
- * the preview and the server always agree.
+ * A package covers a fixed number of printed lines (5). Every line beyond
+ * that adds 15% of the package's base rate, even when the extra line holds
+ * just one word. The same helper runs in the client preview and in the
+ * server that creates the Razorpay order so both agree on the amount.
  *
  * Kept free of data/JSON imports so the same maths runs on the client preview
  * and on the server that creates the Razorpay order.
@@ -14,9 +13,10 @@
 import { countTextLines, wrapTextLines } from "@/lib/text-lines";
 
 export const NAME_CHANGE_DEFAULT_BASE_LINES = 5;
-export const NAME_CHANGE_DEFAULT_EXTRA_LINE_PERCENT = 0.2;
-/** Approximate characters in one classified column line. */
-export const NAME_CHANGE_CHARS_PER_LINE = 45;
+/** Each extra line costs 15% of the package's base rate. */
+export const NAME_CHANGE_DEFAULT_EXTRA_LINE_PERCENT = 0.15;
+/** Characters in one preview/ad line — shared by the preview and pricing. */
+export const NAME_CHANGE_CHARS_PER_LINE = 28;
 
 export type NameChangeLineQuote = {
   /** Package rate for up to `includedLines`, in rupees. */
@@ -52,7 +52,7 @@ export function wrapNameChangeLines(
 export function calculateNameChangeLineQuote(
   baseRate: number,
   text: string,
-  options: { baseLines?: number; extraLineRate?: number } = {},
+  options: { baseLines?: number; extraLineRate?: number; charsPerLine?: number } = {},
 ): NameChangeLineQuote {
   const safeBase = Math.max(0, Math.round(baseRate));
   const includedLines = Math.max(
@@ -64,7 +64,10 @@ export function calculateNameChangeLineQuote(
       ? Math.max(0, Math.round(options.extraLineRate))
       : Math.round(safeBase * NAME_CHANGE_DEFAULT_EXTRA_LINE_PERCENT);
 
-  const lines = countNameChangeLines(text);
+  const lines = countNameChangeLines(
+    text,
+    options.charsPerLine ?? NAME_CHANGE_CHARS_PER_LINE,
+  );
   const extraLines = Math.max(0, lines - includedLines);
   const extraLineAmount = extraLines * extraLineRate;
 

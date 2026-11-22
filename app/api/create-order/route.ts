@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { resolveBookingForService } from "@/lib/checkout";
+import {
+  calculateNameChangeLineQuote,
+  NAME_CHANGE_CHARS_PER_LINE,
+} from "@/lib/name-change-pricing";
 import { calculatePricing, nameChangeGstRate } from "@/lib/pricing";
 import { clientIp, rateLimit, tooMany } from "@/lib/rate-limit";
 import { getRazorpayClient, RAZORPAY_CURRENCY } from "@/lib/razorpay";
@@ -69,9 +73,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Flat package pricing for name-change ads. No extra line or word charges.
-    const adRate = booking.rate;
-
     if (booking.service !== "name-change") {
       return NextResponse.json(
         { error: "Online payment is only available for name-change ads." },
@@ -85,6 +86,13 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
+
+    // 5 lines are included; every extra line (even one word) costs 15% of the
+    // base rate. Same width and maths as the preview shown to the customer.
+    const lineQuote = calculateNameChangeLineQuote(booking.rate, content ?? "", {
+      charsPerLine: NAME_CHANGE_CHARS_PER_LINE,
+    });
+    const adRate = lineQuote.rate;
 
     // Delhi name-change ads carry 5% GST; every other city carries 18%.
     const pricing = calculatePricing(adRate, {
@@ -105,7 +113,11 @@ export async function POST(request: Request) {
         city: note(booking.city, 80) ?? "",
         papers: note(booking.label) ?? "",
         package: note(booking.unit, 40) ?? "",
+        package_rate: String(booking.rate),
         base_rate: String(adRate),
+        extra_lines: String(lineQuote.extraLines),
+        extra_line_rate: String(lineQuote.extraLineRate),
+        extra_line_amount: String(lineQuote.extraLineAmount),
         gst_rate: String(pricing.gstRate),
         ...(purpose ? { purpose: note(purpose, 160) ?? "" } : {}),
       },
@@ -116,6 +128,7 @@ export async function POST(request: Request) {
       amount: Number(order.amount),
       currency: order.currency,
       keyId,
+      lineQuote,
       pricing: {
         basePaise: pricing.basePaise,
         gstPaise: pricing.gstPaise,

@@ -150,7 +150,7 @@ const AT_A_GLANCE = [
   { value: "Per line", label: "Text classified", note: "Priced by line, word or character" },
   { value: "Per sq cm", label: "Classified display", note: "Boxed ads with logo, photo or colour" },
   { value: "Next-day", label: "Publication", note: "Book before the edition cut-off" },
-  { value: "5%", label: "GST", note: "Shown in the total before you pay" },
+  { label: "GST", note: "Shown in the total before you pay" },
   { value: "Free", label: "Drafting & translation", note: "English, Hindi and regional languages" },
 ];
 
@@ -389,9 +389,11 @@ export default function NewspaperClassifiedPage() {
               <div className="mt-5 divide-y divide-line border-t border-line">
                 {AT_A_GLANCE.map((item) => (
                   <div key={item.label} className="flex gap-4 py-4">
-                    <p className="w-24 shrink-0 font-display text-xl text-ink sm:text-2xl">
-                      {item.value}
-                    </p>
+                    {item.value ? (
+                      <p className="w-24 shrink-0 font-display text-xl text-ink sm:text-2xl">
+                        {item.value}
+                      </p>
+                    ) : null}
                     <div>
                       <p className="text-sm font-bold text-ink">{item.label}</p>
                       <p className="mt-0.5 text-xs leading-relaxed text-charcoal">{item.note}</p>

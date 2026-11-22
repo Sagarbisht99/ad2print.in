@@ -5,6 +5,10 @@ import { NewspaperLogo } from "@/components/NewspaperWall";
 import type { Newspaper } from "@/lib/data";
 import { postEnquiry } from "@/lib/enquiry-api";
 import { parseEnquiry, type EnquiryFieldErrors } from "@/lib/enquiry-schema";
+import {
+  calculateNameChangeLineQuote,
+  NAME_CHANGE_CHARS_PER_LINE,
+} from "@/lib/name-change-pricing";
 import { calculatePricing, formatInr, nameChangeGstRate } from "@/lib/pricing";
 import { wrapTextLines } from "@/lib/text-lines";
 import {
@@ -44,8 +48,8 @@ function inr(value: number) {
 }
 
 // A printed classified line fits 28 characters. Words are never broken unless
-// a single word is longer than a whole line.
-const AD_LINE_CHARS = 28;
+// a single word is longer than a whole line. Shared with the server-side quote.
+const AD_LINE_CHARS = NAME_CHANGE_CHARS_PER_LINE;
 
 type Gender = "male" | "female";
 type GuardianKind = "father" | "mother" | "husband";
@@ -142,19 +146,19 @@ export function NoticeBuilder({
       const child = childNoun(gender, lang);
 
       if (lang === "hindi") {
-        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है। सभी प्रयोजनों के लिए।`;
+        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है।`;
       }
 
-      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN} for all purposes.`;
+      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN}.`;
     }
 
     const guard = guardian.trim() || SAMPLE.guardian;
 
     if (lang === "hindi") {
-      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है। सभी प्रयोजनों के लिए।`;
+      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है।`;
     }
 
-    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN} for all purposes.`;
+    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN}.`;
   }, [
     lang,
     isMinor,
@@ -173,10 +177,14 @@ export function NoticeBuilder({
   const previewLines = useMemo(() => wrapTextLines(notice, AD_LINE_CHARS), [notice]);
   const totalLines = previewLines.length;
 
-  // Flat package pricing: the published package rate is the price. No extra
-  // line or word charges are added on top.
-  const pricing = booking?.rate
-    ? calculatePricing(booking.rate, { gstRate: nameChangeGstRate(booking.city) })
+  // The package covers 5 lines. Every extra line — even one holding a single
+  // word — adds 15% of the base rate. The server recalculates the same quote.
+  const lineQuote = booking?.rate
+    ? calculateNameChangeLineQuote(booking.rate, notice, { charsPerLine: AD_LINE_CHARS })
+    : null;
+  const adRate = lineQuote?.rate ?? booking?.rate;
+  const pricing = adRate
+    ? calculatePricing(adRate, { gstRate: nameChangeGstRate(booking?.city) })
     : null;
 
   function setGenderAndKind(next: Gender) {
@@ -247,7 +255,10 @@ export function NoticeBuilder({
       booking?.rate
         ? `Package rate: ${inr(booking.rate)}`
         : "",
-      pricing ? `GST (${Math.round(pricing.gstRate * 100)}%): ${formatInr(pricing.gstPaise)}` : "",
+      lineQuote && lineQuote.extraLines > 0
+        ? `Extra Line Charge (${lineQuote.extraLines}): ${inr(lineQuote.extraLineAmount)}`
+        : "",
+      pricing ? `GST: ${formatInr(pricing.gstPaise)}` : "",
       pricing ? `Convenience fee (on rate + GST): ${formatInr(pricing.conveniencePaise)}` : "",
       pricing ? `Total payable: ${formatInr(pricing.totalPaise)}` : "",
       isMinor ? "Age group: Below 18 years" : "Age group: Above 18 years",
@@ -655,6 +666,12 @@ export function NoticeBuilder({
                   <p className="mt-3 text-center text-[13px] font-semibold text-ink">
                     Lines Count: <span className="text-maroon">{totalLines}</span>
                   </p>
+                  {lineQuote && lineQuote.extraLines > 0 ? (
+                    <p className="mt-1 text-center text-[11px] leading-snug text-charcoal">
+                      {lineQuote.extraLines} extra line{lineQuote.extraLines === 1 ? "" : "s"} at{" "}
+                      {inr(lineQuote.extraLineRate)} each (15% of the base rate)
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -699,10 +716,13 @@ export function NoticeBuilder({
                     label="Package rate"
                     value={formatInr(Math.round((booking?.rate ?? 0) * 100))}
                   />
-                  <SummaryRow
-                    label={`GST (${Math.round(pricing.gstRate * 100)}%)`}
-                    value={formatInr(pricing.gstPaise)}
-                  />
+                  {lineQuote && lineQuote.extraLines > 0 ? (
+                    <SummaryRow
+                      label={`Extra Line Charge (${lineQuote.extraLines})`}
+                      value={formatInr(Math.round(lineQuote.extraLineAmount * 100))}
+                    />
+                  ) : null}
+                  <SummaryRow label="GST" value={formatInr(pricing.gstPaise)} />
                   <SummaryRow
                     label="Convenience Fee"
                     value={formatInr(pricing.conveniencePaise)}

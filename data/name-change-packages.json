@@ -4512,10 +4512,10 @@
       ],
       "label": "Nava Bharat",
       "tag": "Hindi",
-      "rate": 600,
-      "mrp": 660,
+      "rate": 850,
+      "mrp": 935,
       "baseLines": 5,
-      "extraLineRate": 120,
+      "extraLineRate": 128,
       "pricingModel": "per_line_flat",
       "pricingSource": "derived_percent_of_base",
       "sourceId": 225,
@@ -4541,9 +4541,9 @@
     {
       "slugs": [
         "times-of-india",
-        "navbharat-times"
+        "nava-bharat"
       ],
-      "label": "Times of India + Navbharat Times",
+      "label": "Times of India + Nava Bharat",
       "rate": 1500,
       "mrp": 1650,
       "baseLines": 5,
@@ -4600,14 +4600,14 @@
     },
     {
       "slugs": [
-        "navbharat-times"
+        "nava-bharat"
       ],
-      "label": "Navbharat Times",
+      "label": "Nava Bharat",
       "tag": "Hindi",
       "rate": 900,
       "mrp": 990,
       "baseLines": 5,
-      "extraLineRate": 180,
+      "extraLineRate": 135,
       "pricingModel": "per_line_flat",
       "pricingSource": "derived_percent_of_base",
       "sourceId": 215,
@@ -4619,10 +4619,10 @@
       ],
       "label": "Times of India",
       "tag": "English",
-      "rate": 640,
-      "mrp": 704,
+      "rate": 750,
+      "mrp": 825,
       "baseLines": 5,
-      "extraLineRate": 128,
+      "extraLineRate": 113,
       "pricingModel": "per_line_flat",
       "pricingSource": "derived_percent_of_base",
       "sourceId": 216,

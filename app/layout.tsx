@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import { AppShell } from "@/components/AppShell";
 import { JsonLd } from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd, DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS, SITE_URL } from "@/lib/seo";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
-const display = Plus_Jakarta_Sans({
+// Fonts are self-hosted so builds never depend on a Google Fonts response.
+// (next/font/google can fail with "queries have exactly one entry" in Turbopack
+// when Google returns extensionless /l/font?kit=… URLs — see vercel/next.js#99114.)
+const display = localFont({
+  src: "./fonts/plus-jakarta-sans-latin.woff2",
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: "200 800",
   display: "swap",
 });
 
-const body = Inter({
+const body = localFont({
+  src: "./fonts/inter-latin.woff2",
   variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "100 900",
   display: "swap",
 });
 
