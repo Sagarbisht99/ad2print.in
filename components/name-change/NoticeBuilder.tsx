@@ -146,19 +146,19 @@ export function NoticeBuilder({
       const child = childNoun(gender, lang);
 
       if (lang === "hindi") {
-        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है, सभी प्रयोजनों के लिए।`;
+        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है।`;
       }
 
-      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN} for all purposes.`;
+      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN}.`;
     }
 
     const guard = guardian.trim() || SAMPLE.guardian;
 
     if (lang === "hindi") {
-      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है, सभी प्रयोजनों के लिए।`;
+      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है।`;
     }
 
-    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN} for all purposes.`;
+    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN}.`;
   }, [
     lang,
     isMinor,
