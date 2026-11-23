@@ -669,7 +669,7 @@ export function NoticeBuilder({
                   {lineQuote && lineQuote.extraLines > 0 ? (
                     <p className="mt-1 text-center text-[11px] leading-snug text-charcoal">
                       {lineQuote.extraLines} extra line{lineQuote.extraLines === 1 ? "" : "s"} at{" "}
-                      {inr(lineQuote.extraLineRate)} each (20% of the base rate)
+                      {inr(lineQuote.extraLineRate)} each
                     </p>
                   ) : null}
                 </div>
