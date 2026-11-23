@@ -113,9 +113,9 @@ export async function POST(request: Request) {
     const amountPaise = Number(payment.amount);
 
     const baseRate = Number(notes.base_rate);
-    // Name-change orders are billed at 5% GST in Delhi and 18% elsewhere; the
-    // rate is stamped on the order at creation. Older orders have no note and
-    // keep the 5% default.
+    // New name-change orders stamp 5% GST on every edition. The order note is
+    // honoured so older orders at a different rate still reconcile, and orders
+    // without a note keep the 5% default.
     const notedGstRate = Number(notes.gst_rate);
     const pricing =
       Number.isFinite(baseRate) && baseRate > 0

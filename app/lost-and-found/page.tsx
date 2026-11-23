@@ -39,7 +39,7 @@ const LOST_FOUND_FAQS = [
   },
   {
     q: "How much does a lost & found ad cost?",
-    a: "From ₹100 (Loksatta Pune) to ₹2,000 (Prajavani All Editions, Mysore) for the first 5 lines. The desk shows the full amount including GST and convenience fee before publication — never after.",
+    a: "From ₹100 (Loksatta Pune) to ₹2,000 (Prajavani All Editions, Mysore) for the first 5 lines. The desk shows the full amount including GST and convenience charge before publication — never after.",
   },
   {
     q: "What should the ad mention?",

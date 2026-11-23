@@ -2,7 +2,7 @@
  * Name-change wording pricing.
  *
  * A package covers a fixed number of printed lines (5). Every line beyond
- * that adds 15% of the package's base rate, even when the extra line holds
+ * that adds 20% of the package's base rate, even when the extra line holds
  * just one word. The same helper runs in the client preview and in the
  * server that creates the Razorpay order so both agree on the amount.
  *
@@ -13,8 +13,8 @@
 import { countTextLines, wrapTextLines } from "@/lib/text-lines";
 
 export const NAME_CHANGE_DEFAULT_BASE_LINES = 5;
-/** Each extra line costs 15% of the package's base rate. */
-export const NAME_CHANGE_DEFAULT_EXTRA_LINE_PERCENT = 0.15;
+/** Each extra line costs 20% of the package's base rate. */
+export const NAME_CHANGE_DEFAULT_EXTRA_LINE_PERCENT = 0.2;
 /** Characters in one preview/ad line — shared by the preview and pricing. */
 export const NAME_CHANGE_CHARS_PER_LINE = 28;
 

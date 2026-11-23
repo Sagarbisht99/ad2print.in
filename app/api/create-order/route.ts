@@ -87,14 +87,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5 lines are included; every extra line (even one word) costs 15% of the
+    // 5 lines are included; every extra line (even one word) costs 20% of the
     // base rate. Same width and maths as the preview shown to the customer.
     const lineQuote = calculateNameChangeLineQuote(booking.rate, content ?? "", {
       charsPerLine: NAME_CHANGE_CHARS_PER_LINE,
     });
     const adRate = lineQuote.rate;
 
-    // Delhi name-change ads carry 5% GST; every other city carries 18%.
+    // Name-change ads carry 5% GST in every edition.
     const pricing = calculatePricing(adRate, {
       gstRate: nameChangeGstRate(booking.city),
     });

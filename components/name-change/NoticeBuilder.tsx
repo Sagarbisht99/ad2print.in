@@ -146,19 +146,19 @@ export function NoticeBuilder({
       const child = childNoun(gender, lang);
 
       if (lang === "hindi") {
-        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है।`;
+        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है, सभी प्रयोजनों के लिए।`;
       }
 
-      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN}.`;
+      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN} for all purposes.`;
     }
 
     const guard = guardian.trim() || SAMPLE.guardian;
 
     if (lang === "hindi") {
-      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है।`;
+      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है, सभी प्रयोजनों के लिए।`;
     }
 
-    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN}.`;
+    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN} for all purposes.`;
   }, [
     lang,
     isMinor,
@@ -178,7 +178,7 @@ export function NoticeBuilder({
   const totalLines = previewLines.length;
 
   // The package covers 5 lines. Every extra line — even one holding a single
-  // word — adds 15% of the base rate. The server recalculates the same quote.
+  // word — adds 20% of the base rate. The server recalculates the same quote.
   const lineQuote = booking?.rate
     ? calculateNameChangeLineQuote(booking.rate, notice, { charsPerLine: AD_LINE_CHARS })
     : null;
@@ -259,7 +259,7 @@ export function NoticeBuilder({
         ? `Extra Line Charge (${lineQuote.extraLines}): ${inr(lineQuote.extraLineAmount)}`
         : "",
       pricing ? `GST: ${formatInr(pricing.gstPaise)}` : "",
-      pricing ? `Convenience fee (on rate + GST): ${formatInr(pricing.conveniencePaise)}` : "",
+      pricing ? `Convenience charge: ${formatInr(pricing.conveniencePaise)}` : "",
       pricing ? `Total payable: ${formatInr(pricing.totalPaise)}` : "",
       isMinor ? "Age group: Below 18 years" : "Age group: Above 18 years",
       isMinor ? `Child's old name: ${details.oldName}` : `Old name: ${details.oldName}`,
@@ -335,7 +335,7 @@ export function NoticeBuilder({
         setDraftKey(currentDraftKey);
       }
 
-      // Step 2: take payment for the selected package (base + GST + convenience fee).
+      // Step 2: take payment for the selected package (base + GST + convenience charge).
       setStatus({ kind: "paying" });
 
       const orderRes = await fetch("/api/create-order", {
@@ -669,7 +669,7 @@ export function NoticeBuilder({
                   {lineQuote && lineQuote.extraLines > 0 ? (
                     <p className="mt-1 text-center text-[11px] leading-snug text-charcoal">
                       {lineQuote.extraLines} extra line{lineQuote.extraLines === 1 ? "" : "s"} at{" "}
-                      {inr(lineQuote.extraLineRate)} each (15% of the base rate)
+                      {inr(lineQuote.extraLineRate)} each (20% of the base rate)
                     </p>
                   ) : null}
                 </div>
@@ -722,9 +722,13 @@ export function NoticeBuilder({
                       value={formatInr(Math.round(lineQuote.extraLineAmount * 100))}
                     />
                   ) : null}
-                  <SummaryRow label="GST" value={formatInr(pricing.gstPaise)} />
                   <SummaryRow
-                    label="Convenience Fee"
+                    label="GST"
+                    hint="5% on all editions"
+                    value={formatInr(pricing.gstPaise)}
+                  />
+                  <SummaryRow
+                    label="Convenience Charge"
                     value={formatInr(pricing.conveniencePaise)}
                   />
                 </>
@@ -809,8 +813,7 @@ export function NoticeBuilder({
                         : "Make Payment"}
                 </button>
                 <p className="mt-2 max-w-md text-xs leading-relaxed text-charcoal">
-                  Your draft is saved before payment. Total includes GST and a convenience fee
-                  on rate + GST.
+                  Your draft is saved before payment. Total includes GST and a convenience charge.
                 </p>
               </div>
             ) : (
@@ -881,10 +884,25 @@ export function NoticeBuilder({
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
+function SummaryRow({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+}) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-line py-2.5 last:border-b-0">
-      <dt className="text-charcoal">{label}</dt>
+      <dt className="text-charcoal">
+        {label}
+        {hint ? (
+          <span className="ml-1.5 align-baseline text-[11px] font-normal text-charcoal/70">
+            {hint}
+          </span>
+        ) : null}
+      </dt>
       <dd className="max-w-[65%] text-right font-medium text-ink break-words">{value}</dd>
     </div>
   );
