@@ -724,7 +724,7 @@ export function NoticeBuilder({
                   ) : null}
                   <SummaryRow
                     label="GST"
-                    hint="5% on all editions"
+                    hint="5%"
                     value={formatInr(pricing.gstPaise)}
                   />
                   <SummaryRow
