@@ -87,9 +87,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // 5 lines are included; every extra line (even one word) costs 20% of the
-    // base rate. Same width and maths as the preview shown to the customer.
+    // The selected package's included lines and per-extra-line rate are used,
+    // falling back to 5 lines / 20% of base. Same width and maths as the
+    // preview shown to the customer.
     const lineQuote = calculateNameChangeLineQuote(booking.rate, content ?? "", {
+      baseLines: booking.baseLines,
+      extraLineRate: booking.extraLineRate,
       charsPerLine: NAME_CHANGE_CHARS_PER_LINE,
     });
     const adRate = lineQuote.rate;

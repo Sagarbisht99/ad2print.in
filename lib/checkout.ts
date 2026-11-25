@@ -11,6 +11,9 @@ export type CheckoutBooking = {
   unit: string;
   /** Flat package rate in rupees, as shown on the package picker. */
   rate: number;
+  /** Included lines and the per-extra-line charge from the package data. */
+  baseLines?: number;
+  extraLineRate?: number;
 };
 
 function parseSlugs(papers: string | string[] | undefined) {
@@ -43,6 +46,8 @@ export function resolveCheckoutBooking(
     label: selection.label,
     unit: selection.unit,
     rate: selection.rate,
+    baseLines: selection.baseLines,
+    extraLineRate: selection.extraLineRate,
   };
 }
 

@@ -377,9 +377,11 @@ function applyRateToPackage(pkg, row, rows, now) {
   pkg.rate = row.base_rate;
   if (row.mrp != null) pkg.mrp = row.mrp;
   pkg.baseLines = row.base_lines;
-  pkg.extraLineRate = row.extra_line_rate;
+  // Hand-set extra-line rates (e.g. negotiated combo prices) must survive a
+  // rate re-sync, which otherwise replaces them with the scraped/default value.
+  if (!pkg.extraLineRateManual) pkg.extraLineRate = row.extra_line_rate;
   pkg.pricingModel = row.pricing_model;
-  pkg.pricingSource = row.pricing_source;
+  if (!pkg.extraLineRateManual) pkg.pricingSource = row.pricing_source;
   pkg.sourceId = row.source_id;
   pkg.lastSyncedAt = now;
   if (rows.length > 1) pkg.editions = buildEditions(rows);

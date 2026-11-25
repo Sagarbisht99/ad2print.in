@@ -130,6 +130,23 @@ const DOCUMENT_USES = [
 
 const FEATURED_CITIES = ["Delhi", "Mumbai", "Bangalore"];
 
+// Row order for the city picker grid (4 columns on large screens).
+const PICKER_CITY_ROWS = [
+  ["Delhi", "Mumbai", "Kolkata", "Chennai"],
+  ["Bangalore", "Hyderabad", "Pune", "Ahmedabad"],
+  ["Chandigarh", "Lucknow", "Jaipur", "Patna"],
+];
+
+function orderCitiesForPicker(cities: string[]) {
+  const pinned = PICKER_CITY_ROWS.flat();
+  const available = new Set(cities);
+  const pinnedSet = new Set(pinned);
+  return [
+    ...pinned.filter((city) => available.has(city)),
+    ...cities.filter((city) => !pinnedSet.has(city)),
+  ];
+}
+
 function inr(value: number) {
   return `₹${value.toLocaleString("en-IN")}`;
 }
@@ -196,7 +213,7 @@ export default function ChangeMyNamePage() {
         ]}
       />
 
-      <NameChangeCityPicker cities={cities} />
+      <NameChangeCityPicker cities={orderCitiesForPicker(cities)} />
 
 
       {featured.length > 0 ? (

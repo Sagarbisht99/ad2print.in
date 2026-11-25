@@ -10,9 +10,10 @@
       "rate": 875,
       "mrp": 962.5,
       "baseLines": 5,
-      "extraLineRate": 175,
+      "extraLineRate": 100,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 8,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -26,9 +27,10 @@
       "rate": 670,
       "mrp": 737,
       "baseLines": 5,
-      "extraLineRate": 134,
+      "extraLineRate": 90,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 354,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -57,9 +59,10 @@
       "rate": 699,
       "mrp": 768.9,
       "baseLines": 5,
-      "extraLineRate": 140,
+      "extraLineRate": 100,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 9,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -73,9 +76,10 @@
       "rate": 1150,
       "mrp": 1265,
       "baseLines": 5,
-      "extraLineRate": 230,
+      "extraLineRate": 100,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 327,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -89,9 +93,10 @@
       "rate": 725,
       "mrp": 797.5,
       "baseLines": 5,
-      "extraLineRate": 145,
+      "extraLineRate": 100,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 347,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -104,9 +109,10 @@
       "rate": 750,
       "mrp": 825,
       "baseLines": 5,
-      "extraLineRate": 150,
+      "extraLineRate": 120,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 374,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -120,9 +126,10 @@
       "rate": 1675,
       "mrp": 1842.5,
       "baseLines": 5,
-      "extraLineRate": 335,
+      "extraLineRate": 250,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 7,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -458,6 +465,22 @@
   "Bangalore": [
     {
       "slugs": [
+        "times-of-india",
+        "vijay-karnataka"
+      ],
+      "label": "Times of India + Vijay Karnataka",
+      "rate": 1399,
+      "mrp": 1538.9,
+      "baseLines": 5,
+      "extraLineRate": 190,
+      "extraLineRateManual": true,
+      "pricingModel": "per_line_flat",
+      "pricingSource": "manual_override",
+      "sourceId": 118,
+      "lastSyncedAt": "2026-11-19T18:40:45.702Z"
+    },
+    {
+      "slugs": [
         "mirror",
         "vijay-karnataka"
       ],
@@ -465,9 +488,10 @@
       "rate": 799,
       "mrp": 878.9,
       "baseLines": 5,
-      "extraLineRate": 160,
+      "extraLineRate": 100,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 100,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -480,9 +504,10 @@
       "rate": 899,
       "mrp": 988.9,
       "baseLines": 5,
-      "extraLineRate": 180,
+      "extraLineRate": 110,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 101,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
@@ -495,25 +520,11 @@
       "rate": 1199,
       "mrp": 1318.9,
       "baseLines": 5,
-      "extraLineRate": 240,
+      "extraLineRate": 160,
+      "extraLineRateManual": true,
       "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
+      "pricingSource": "manual_override",
       "sourceId": 355,
-      "lastSyncedAt": "2026-11-19T18:40:45.702Z"
-    },
-    {
-      "slugs": [
-        "times-of-india",
-        "vijay-karnataka"
-      ],
-      "label": "Times of India + Vijay Karnataka",
-      "rate": 1399,
-      "mrp": 1538.9,
-      "baseLines": 5,
-      "extraLineRate": 280,
-      "pricingModel": "per_line_flat",
-      "pricingSource": "derived_percent_of_base",
-      "sourceId": 118,
       "lastSyncedAt": "2026-11-19T18:40:45.702Z"
     },
     {

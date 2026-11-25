@@ -121,6 +121,7 @@ export function getNameChangePackages(city: string) {
       mrp?: number;
       baseLines?: number;
       extraLineRate?: number;
+      extraLineRateManual?: boolean;
       pricingModel?: string;
       pricingSource?: string;
       editions?: Array<{
@@ -154,6 +155,7 @@ export function getNameChangePackages(city: string) {
         mrp: row.mrp,
         baseLines: row.baseLines,
         extraLineRate: row.extraLineRate,
+        extraLineRateManual: row.extraLineRateManual,
         pricingModel: row.pricingModel,
         pricingSource: row.pricingSource,
         editions: row.editions,
@@ -180,6 +182,7 @@ export function getNameChangeSelection(slugs: string[], city?: string) {
     tag: pkg?.tag,
     baseLines: pkg?.baseLines,
     extraLineRate: pkg?.extraLineRate,
+    extraLineRateManual: pkg?.extraLineRateManual,
     pricingModel: pkg?.pricingModel,
     pricingSource: pkg?.pricingSource,
     editions: pkg?.editions,

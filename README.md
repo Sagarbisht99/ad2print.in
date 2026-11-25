@@ -104,8 +104,13 @@ totalPrice = base_rate + Math.max(0, totalLines - base_lines) * extra_line_rate
 
 `totalLines` comes from `countNameChangeLines()` in `lib/text-lines.ts`, which
 greedily wraps the ad matter at 45 characters per line — the same wrap used by
-the preview. When a package has no `extraLineRate`, the helper falls back to
-20% of its rate so the preview and the server charge always agree.
+the preview. The preview and the server both pass the selected package's
+`baseLines` / `extraLineRate` to the helper; when a package has no
+`extraLineRate`, it falls back to 20% of its rate so the two always agree.
+
+Packages with a hand-set extra-line rate carry `"extraLineRateManual": true`
+in `data/name-change-packages.json`. The rate sync leaves those values alone
+instead of replacing them with scraped or derived rates.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 

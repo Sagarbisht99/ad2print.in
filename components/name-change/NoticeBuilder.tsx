@@ -25,6 +25,8 @@ export type NameChangeBooking = {
   unit: string;
   rate?: number;
   mrp?: number;
+  baseLines?: number;
+  extraLineRate?: number;
 };
 
 type PaymentStatus =
@@ -140,25 +142,31 @@ export function NoticeBuilder({
     const oldN = oldName.trim() || SAMPLE.oldName;
     const newN = newName.trim() || SAMPLE.newName;
     const addr = address.trim() || edition || SAMPLE.address;
+    // Delhi editions require the "for all purposes" wording; other cities keep
+    // the shorter notice. Applied only to the auto-generated matter — the user
+    // can still edit the ad matter directly.
+    const includePurpose = edition === "Delhi";
+    const englishPurpose = includePurpose ? " for all purposes" : "";
+    const hindiPurpose = includePurpose ? ", सभी प्रयोजनों के लिए" : "";
 
     if (isMinor) {
       const parent = guardian.trim() || SAMPLE.guardian;
       const child = childNoun(gender, lang);
 
       if (lang === "hindi") {
-        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है।`;
+        return `मैं, ${parent}, निवासी ${addr}, ने अपने नाबालिग ${child} का नाम ${oldN} से बदलकर ${newN} रख दिया है${hindiPurpose}।`;
       }
 
-      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN}.`;
+      return `I, ${parent}, R/o ${addr}, have changed my minor ${child}'s name from ${oldN} to ${newN}${englishPurpose}.`;
     }
 
     const guard = guardian.trim() || SAMPLE.guardian;
 
     if (lang === "hindi") {
-      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है।`;
+      return `मैं, ${oldN}, ${rel.short} ${guard}, निवासी ${addr}, ने अपना नाम बदलकर ${newN} रख लिया है${hindiPurpose}।`;
     }
 
-    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN}.`;
+    return `I, ${oldN}, ${rel.short} ${guard}, R/o ${addr}, have changed my name to ${newN}${englishPurpose}.`;
   }, [
     lang,
     isMinor,
@@ -177,10 +185,15 @@ export function NoticeBuilder({
   const previewLines = useMemo(() => wrapTextLines(notice, AD_LINE_CHARS), [notice]);
   const totalLines = previewLines.length;
 
-  // The package covers 5 lines. Every extra line — even one holding a single
-  // word — adds 20% of the base rate. The server recalculates the same quote.
+  // The package covers its included lines. Every extra line — even one holding
+  // a single word — adds the package's extra-line rate (20% of base by default).
+  // The server recalculates the same quote from the same package data.
   const lineQuote = booking?.rate
-    ? calculateNameChangeLineQuote(booking.rate, notice, { charsPerLine: AD_LINE_CHARS })
+    ? calculateNameChangeLineQuote(booking.rate, notice, {
+        baseLines: booking.baseLines,
+        extraLineRate: booking.extraLineRate,
+        charsPerLine: AD_LINE_CHARS,
+      })
     : null;
   const adRate = lineQuote?.rate ?? booking?.rate;
   const pricing = adRate

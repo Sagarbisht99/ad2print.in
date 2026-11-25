@@ -109,6 +109,8 @@ export default async function NameChangeComposePage({ params, searchParams }: Pr
             unit: selection.unit,
             rate: selection.rate,
             mrp: selection.mrp,
+            baseLines: selection.baseLines,
+            extraLineRate: selection.extraLineRate,
           }}
         />
       </div>
